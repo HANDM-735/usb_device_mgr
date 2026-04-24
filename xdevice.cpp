@@ -3392,3 +3392,265 @@ int xmboard::handle_alarm_request_message(xusbpackage *the_pack)
 
 }
 
+//上报TH伺服器告警
+int xmboard::send_thservo_alarm(const std::string value)
+{
+    LOG_MSG(MSG_LOG,"Enter into xmboard::send_thservo_alarm()");
+    int ret = 0;
+
+    //将TH伺服器的告警通过http result接口上报给平台
+    mgr_handler_dev * handler_dev_mgr = mgr_handler_dev::get_instance();
+    servo_err alarm;
+    int rt = parse_th_servo_data_alarm(value,alarm);
+    if(rt != -1)
+    {
+        handler_dev_mgr->servo_alarm(alarm.m_servo_id,alarm.m_errcode);
+    }
+
+    LOG_MSG(MSG_LOG,"exited xmboard::send_thservo_alarm() ret=%d",ret);
+    return ret;
+}
+
+//南向应答消息处理
+int xmboard::handle_south_response(xusbpackage *pack)
+{
+    LOG_MSG(MSG_LOG,"Enter into xmboard::handle_south_response()");
+    int ret = -1;
+    xusbpackage *the_pack = static_cast<xusbpackage *>(pack);
+    if(!the_pack->crc_checksum())
+    {
+        LOG_MSG(ERR_LOG,"xmboard::handle_south_response(),message crc check failed!");
+        return ret;
+    }
+
+    //READ命令处理
+    if((the_pack->m_msg_cmd & MSG_CMD_MASK) == xusbpackage::MC_READ)
+    {
+        LOG_MSG(MSG_LOG,"xmboard::handle_south_response() receive read message.");
+        std::list<boost::shared_ptr<xusb_tvl> > list_xusbtlv;
+        std::list<boost::shared_ptr<xtvl> > list_xtlv;
+        int size = the_pack->get_tlv_data(list_xusbtlv);
+        if(size > 0)
+        {
+            //保存xusb tlv数据
+            save_tlv_data(m_id,list_xusbtlv,xusbpackage::MC_READ);
+
+            //将xusb tlv数据转换成平台xtlv格式数据
+            for(auto xusbtlv_tmp : list_xusbtlv)
+            {
+                //将读取命令字的读取到固有和实时数据相关xusb tlv数据转换成平台xtlv数据
+                convert_data(list_xtlv,xusbtlv_tmp);
+                //将安全策略相关xusb tlv数据转换成平台xtlv数据
+                //convert_securitypolicy(list_xtlv,xusbtlv_tmp);
+            }
+
+            //发送给平台
+            xpackage pack(xpackage::MT_NOTIFY,xpackage::MC_READ,PROTO_VERSION,0,the_pack->m_srcid); //构造包
+            pack.add_tlv_data(list_xtlv);
+            int len = send(PORT_PLATFROM,(xpackage*)&pack);
+            if(len > 0)
+            {
+                ret = 0;
+            }
+        }
+    }
+
+    LOG_MSG(MSG_LOG,"Exited xmboard::handle_south_response() ret=%d",ret);
+    return ret;
+}
+
+//南向通知消息处理
+int xmboard::handle_south_notify(xusbpackage *pack)
+{
+    LOG_MSG(MSG_LOG,"Enter into xmboard::handle_south_notify()");
+    int ret = -1;
+    xusbpackage *the_pack = static_cast<xusbpackage *>(pack);
+    if(!the_pack->crc_checksum())
+    {
+        LOG_MSG(ERR_LOG,"xmboard::handle_south_notify(),message crc check failed!");
+        return ret;
+    }
+
+    //READ命令处理
+    if((the_pack->m_msg_cmd & MSG_CMD_MASK) == xusbpackage::MC_READ)
+    {
+        LOG_MSG(MSG_LOG,"xmboard::handle_south_notify() receive read message.");
+        std::list<boost::shared_ptr<xusb_tvl> > list_xusbtlv;
+        int size = the_pack->get_tlv_data(list_xusbtlv);
+        if(size > 0)
+        {
+            //保存xusb tlv数据
+            save_tlv_data(m_id,list_xusbtlv,xusbpackage::MC_READ);
+            ret = 0;
+        }
+    }
+    else
+    {
+        LOG_MSG(ERR_LOG,"xmboard::handle_south_notify(),m_msg_cmd=%d is invalid",the_pack->m_msg_cmd);
+    }
+
+    LOG_MSG(MSG_LOG,"Exited xmboard::handle_south_notify() ret=%d",ret);
+    return ret;
+}
+
+int xmboard::get_id()
+{
+    return m_id;
+}
+
+void xmboard::set_id(int id)
+{
+    m_id = id;
+}
+
+std::string xmboard::get_port_name()
+{
+    return m_port_name;
+}
+
+int xmboard::save_tlv_data(unsigned short board_id,std::list<boost::shared_ptr<xusb_tvl> >& list_tlv,unsigned char cmd)
+{
+    LOG_MSG(MSG_LOG,"Enter into xmboard::save_tlv_data()");
+    boost::shared_ptr<xboard> the_board = m_board_mgr->add_board(board_id);
+    if(the_board != NULL)
+    {
+        the_board->set_tlv_data(list_tlv,cmd); //将TLV数据设置到单板对象
+    }
+    LOG_MSG(MSG_LOG,"Exited xmboard::save_tlv_data()");
+    return 0;
+}
+
+boost::shared_ptr<xusb_tvl> xmboard::find_data(unsigned short tid)
+{
+    int boardid = m_id;
+    boost::shared_ptr<xboard> the_board = m_board_mgr->add_board(m_id);
+    boost::shared_ptr<xusb_tvl> tvl;
+    if(the_board != NULL)
+    {
+        tvl = the_board->find_data((int)tid);
+    }
+
+    return tvl;
+}
+
+void xmboard::set_port_name(std::string port_name)
+{
+    if(m_port_name != port_name)
+    {
+        m_port_name = port_name;
+    }
+}
+
+time_t xmboard::get_activetm()
+{
+    return m_activetm;
+}
+
+void xmboard::set_activetm(time_t activetm)
+{
+    m_activetm = activetm;
+}
+
+std::string xmboard::get_ota_fw_name(int ota_type) //获得该单板的OTA升级文件名
+{
+    switch(ota_type)
+    {
+        case OTA_TYPE_FTTH_MCU:
+            return "FTTH_MCU";
+        case OTA_TYPE_FTMF_MCU:
+            return "FTMF_MCU";
+        case OTA_TYPE_CPTH_MCU:
+            return "CPTH_MCU";
+        case OTA_TYPE_CPMF_MCU:
+            return "CPMF_MCU";
+    }
+    return "";
+}
+
+std::string xmboard::get_board_name(int board_id) //获得单板类型名称
+{
+    if(board_id == BOARD_X86)        return ("B-X86");
+    else if(board_id == BOARD_STV)   return ("B-STV");
+    else if(board_id >= BOARD_TST(0))return ("B-TST");
+    return ("B-UNK");
+}
+
+bool xmboard::is_ota_session_status(int status)
+{
+    bool ret = false;
+    if((status >= OTA_SESSION_STATUS_STARTED) && (status <= OTA_SESSION_STATUS_END))
+    {
+        ret = true;
+    }
+    return ret;
+}
+
+int xmboard::set_ota_transed_length(unsigned int len)
+{
+    LOG_MSG(MSG_LOG,"Enter into xmboard::set_ota_transed_length()");
+    if(m_ota_session == NULL) {
+        LOG_MSG(WRN_LOG,"xmboard::set_ota_transed_length() ota session is not exited!");
+        return -1;
+    }
+    //boost::unique_lock<boost::shared_mutex> lock(m_mux_session);    //写锁
+    m_ota_session->set_ota_transed_len(len);
+    LOG_MSG(MSG_LOG,"Exited xmboard::set_ota_transed_length()");
+    return 0;
+}
+
+int xmboard::set_ota_session_status(int status)
+{
+    LOG_MSG(MSG_LOG,"Enter into xmboard::set_ota_session() status=%d",status);
+    if(m_ota_session == NULL) {
+        LOG_MSG(WRN_LOG,"mgr_usb::set_ota_session() ota session is not exited!");
+        return -1;
+    }
+    boost::unique_lock<boost::shared_mutex> lock(m_mux_session);    //写锁
+    int previous_status = m_ota_session->get_session_status();
+    if(previous_status == OTA_SESSION_STATUS_CANCLED || (previous_status == OTA_SESSION_STATUS_END) || (previous_status == OTA_SESSION_STATUS_CALFILE_END)) {
+        LOG_MSG(WRN_LOG,"mgr_usb::set_ota_session() previous status(%d) is OTA_SESSION_STATUS_CANCLED or OTA_SESSION_STATUS_END,can't change to status(%d)",previous_status,status);
+        return -1;
+    }
+    else
+    {
+        m_ota_session->set_session_status(status);
+        LOG_MSG(MSG_LOG,"mgr_usb::set_ota_session() status from (%d) to (%d)",previous_status,status);
+    }
+    LOG_MSG(MSG_LOG,"Exited mgr_usb::set_ota_session()");
+    return 0;
+}
+
+boost::shared_ptr<ota_session> xmboard::add_ota_session(int status,int ota_type,int ota_version,unsigned int total_len)
+{
+    LOG_MSG(MSG_LOG,"Enter into xmboard::add_ota_session()");
+    if(m_ota_session != NULL) {
+        LOG_MSG(MSG_LOG,"xmboard::add_ota_session(),ota_type=%d has existed.",ota_type);
+        return m_ota_session; //已经存在
+    }
+    LOG_MSG(WRN_LOG,"chip add new add ota_session:ota_type=0x%02X",ota_type);
+    boost::unique_lock<boost::shared_mutex> lock(m_mux_session);    //写锁
+    boost::shared_ptr<ota_session> new_session(new ota_session(status,ota_type,ota_version,total_len));
+    m_ota_session = new_session;
+    lock.unlock();
+    LOG_MSG(MSG_LOG,"Exitt xmboard::add_ota_session()");
+    return m_ota_session;
+}
+
+boost::shared_ptr<ota_session> xmboard::get_ota_session()
+{
+    LOG_MSG(MSG_LOG,"Enter into xmboard::del_ota_session()");
+    boost::unique_lock<boost::shared_mutex> lock(m_mux_session);    //写锁
+    LOG_MSG(MSG_LOG,"exited xmboard::del_ota_session()");
+    return m_ota_session;
+}
+
+int xmboard::del_ota_session()
+{
+    LOG_MSG(MSG_LOG,"Enter into xmboard::del_ota_session()");
+    boost::unique_lock<boost::shared_mutex> lock(m_mux_session);    //写锁
+    m_ota_session.reset();
+    LOG_MSG(MSG_LOG,"exited xmboard::del_ota_session()");
+    return 0;
+}
+
+#endif
