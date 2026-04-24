@@ -1,0 +1,563 @@
+#ifndef 	MGR_USB_DEF__H_H_
+#define		MGR_USB_DEF__H_H_
+
+//OTA 报文命令字的tlv的type值
+#define OTA_START 							0x0001
+#define	OTA_CANCEL							0x0002
+#define	OTA_COMPLETE						0x0003
+#define OTA_FAIL							0x0004
+#define	FIRMWARE_DATA						0x0010
+#define OTA_PROGRESS						0x0011
+#define OTA_CALFILE_READ					0x0021
+#define OTA_CALFILE_DATA					0x0022
+#define OTA_CALFILE_COMPLETE				0x0023
+
+//READ,WRITE,ALARM报文命令字的tlv的type值
+#define RWA_TEMP							0x0001
+#define RWA_VOLTAGE							0x0002
+#define RWA_ELE_CURRENT						0x0003
+#define RWA_RCAFPGA_TEMP					0x0008
+#define RWA_FPGA_TEMP						0x0009
+
+//#define RWA_TEMP_SET						0x0011
+//#define RWA_VOLTAGE_SET					0x0012
+#define RWA_POWER_STATUS					0x0020
+#define RWA_POS_STATUS						0x0021
+#define RWA_BOARD_ID						0x0022
+#define RWA_FPGA_VERSION					0x0023
+#define RWA_MCU_SERDES						0x0024
+#define RWA_DIG_ID							0x0030
+#define RWA_DIG_EXIST						0x0031
+#define RWA_BOARD_TYPE						0x0050
+#define RWA_BOARD_SN						0x0051
+#define RWA_MANU_INFO						0x0052
+#define RWA_HW_VER							0x0053
+#define RWA_SW_VER							0x0054
+#define RWA_SLOT							0x0056
+//#define RWA_REPORT_CYCLE					0x0058
+//#define RWA_COMM_STATUS					0x0059
+//#define RWA_TOTAL_RUNTIME					0x005A
+
+//设备管理读逻辑数据转发给sync板报文命令字
+#define RWA_UTP40_TEMP		    			0xF001
+#define RWA_ASIC_TEMP		    			0xF002
+//#define RWA_DIG_EXIST		    			0xF003
+#define RWA_DIG_VOL							0xF004
+//#define RWA_DIG_ID						0xF005
+#define RWA_X86_TEMP						0xF006
+#define RWA_DIG_LOGIC_VER					0xF007
+//#define RWA_BOARD_ID						0xF008
+// 读 UTP40 寄存器
+#define RWA_UTP40_REGISTER					0xF009
+// 读 UTP102 寄存器
+#define RWA_UTP102_REGISTER					0xF00A
+
+
+#define RWA_UTP40_TEMP_ALARM    			0xFF01
+#define RWA_ASIC_TEMP_ALARM     			0xFF02
+#define RWA_DIG_VOL_ALARM					0xFF04
+#define RWA_X86_TEMP_ALARM					0xFF05  //预留
+#define RWA_BOARD_ID_ALARM					0xFF08
+#define RWA_ASIC_TEMP_ALARM_USB             0xFF09  // 单片机侧上报过来的 ASIC 芯片温度告警
+#define RWA_RK3588_EXCEPTION				0xFF0A	// RK3588异常告警
+
+
+
+//下面仅用于装备自检的数据字段
+#define RWA_SERDES_STATUS					0x0062
+#define RWA_AD9528_LOCKSTATUS				0x0063
+#define RWA_AD9545_LOCKSTATUS				0x0064
+#define RWA_PWM_CHECK						0x0065
+#define RWA_AD9528_REG						0x0066
+
+//TestHeader的hifix锁定状态
+#define	RWA_HIFIX_LOCK						0x0067
+//TH板卡腔体出风口温度
+#define	RWA_BOX_OUTLET_TEMP					0x0068
+//TH-48V汇流排温度
+#define	RWA_BOX_48V_TEMP					0x0069
+//FT-HF-A腔体温度
+#define	RWA_UPPER_HF_TEMP					0x006A
+//FT-HF-B腔体温度
+#define	RWA_LOWER_HF_TEMP					0x006B
+//TH-48V线缆腔体出风口烟感
+#define RWA_48V_SMOKE						0x006C
+//TH板卡腔体出风口烟感
+#define RWA_BOX_OUTLET_SMOKE				0x006D
+//FT-HF-A腔体烟感
+#define RWA_UPPER_HF_SMOKE					0x006E
+//FT-HF-B腔体烟感
+#define	RWA_LOWER_HF_SMOKE					0x006F
+//MF板卡顶部出风口风扇转速
+#define	RWA_TOP_OUTLET_FAN					0x0070
+//TH板卡腔体出风口风扇转速
+#define RWA_BOX_OUTLET_FAN					0x0071
+//TH-48V线缆腔体出风口风扇转速
+#define RWA_48V_OUTLET_FAN					0x0072
+//MF板卡顶部出风口温度
+#define	RWA_MF_TOP_OUTLET_TEMP				0x0073
+//动力源-48V输出汇流排温度
+#define	RWA_48V_TEMP						0x0074
+//MF板卡顶部出风口烟感
+#define	RWA_TOP_OUTLET_SMOKE				0x0075
+//CDU下方集水槽水浸传感器高度1
+#define	RWA_CDU_WATERLOGGING1				0x0076
+//CDU下方集水槽水浸传感器高度2
+#define RWA_CDU_WATERLOGGING2				0x0077
+
+//#define RWA_CDU_PUMP_PRESSURE				0x0078
+//#define RWA_CDU_TEMP						0x0079
+//#define RWA_CDU_TRAFFIC					0x007A
+//#define RWA_48V_PS_TEMP					0x007D
+//#define RWA_UPS_DATA						0x007F
+//#define RWA_FACTORYWATER_TEMP				0x0080
+//#define RWA_FACTORYWATER_TRFFIC			0x0081
+//#define RWA_FACTORYWATER_PRESSURE			0x0082
+
+//FT/CP-TH线缆腔体出风口温度
+#define	RWA_CABLE_BOX_OUTLET_TEMP			0x0078
+//CP-HF腔体温度
+#define RWA_CPHF_BOX_TEMP					0x0079
+//FT/CP-TH板卡腔体进风口温度
+#define RWA_FTTH_BOX_INLET_TEMP				0x007A
+//48V动力源信息电压
+#define	RWA_48V_VOLTAGE						0x007B
+//48V动力源信息电流
+#define	RWA_48V_CURRENT						0x007C
+//CP-HF腔体烟感
+#define RWA_CPHF_BOX_SMOKE					0x007D
+//48V动力源功耗
+#define	RWA_48V_TDP							0x007E
+//FT-HF-A腔体风扇转速
+#define RWA_UPPER_HF_FAN					0x007F
+//电表三相电压
+#define	RWA_THREEPHASE_VOLTAGE				0x0080
+//电表三想电流
+#define RWA_THREEPHASE_CURRENT				0x0081
+//FT-HF-B腔体风扇转速
+#define RWA_LOWER_HF_FAN					0x0082
+//TH板卡腔体出风口温度阈值设定
+#define	RWA_BOX_OUTLET_TEMP_SET				0x0083
+//TH-48V汇流排温度阈值设定
+#define	RWA_BOX_48V_TEMP_SET				0x0084
+//FT-HF-A腔体温度阈值设定
+#define	RWA_UPPER_HF_TEMP_SET				0x0085
+//FT-HF-B腔体温度阈值设定
+#define	RWA_LOWER_HF_TEMP_SET				0x0086
+//TH-48V线缆腔体出风口烟感阈值设定
+#define	RWA_48V_SMOKE_SET					0x0087
+//TH板卡腔体出风口烟感阈值设定
+#define	RWA_BOX_OUTLET_SMOKE_SET			0x0088
+//FT-HF-A腔体烟感阈值设定
+#define	RWA_UPPER_HF_SMOKE_SET				0x0089
+//FT-HF-B腔体烟感阈值设定
+#define	RWA_LOWER_HF_SMOKE_SET				0x008A
+//MF板卡顶部出风口温度阈值设定
+#define	RWA_MF_TOP_OUTLET_TEMP_SET			0x008B
+//动力源-48V输出汇流排温度阈值设定
+#define	RWA_48V_PS_OUTPUT_TEMP_SET			0x008C
+//MF板卡顶部出风口烟感阈值设定
+#define RWA_TOP_OUTLET_SMOKE_SET			0x008D
+
+//CDU状态信息水泵压力阈值设定
+#define	RWA_CDU_PUMP_PRESSURE_SET 			0x008E
+//CDU状态信息温度阈值设定
+#define	RWA_CDU_TEMP_SET					0x008F
+//CDU状态信息流量阈值设定
+#define	RWA_CDU_TRAFFIC_SET					0x0090
+//48V动力源信息电压阈值设定
+#define	RWA_48V_VOLTAGE_SET					0x0091
+//48V动力源信息电流阈值设定
+#define RWA_48V_CURRENT_SET					0x0092
+//48V动力源信息温度阈值设定
+#define RWA_48V_PS_TEMP_SET					0x0093
+//#define RWA_FACTORYWATER_TEMP_SET			0x0094
+//#define RWA_FACTORYWATER_TRFFIC_SET		0x0095
+//#define RWA_FACTORYWATER_PRESSURE_SET		0x0096
+
+//FT-HF-A腔体风扇转速阈值设定
+#define RWA_UPPER_HF_FAN_SET				0x0094
+//FT-HF-B腔体风扇转速阈值设定
+#define RWA_LOWER_HF_FAN_SET				0x0095
+//Tester Header Hifix翻转状态设定
+#define RWA_HIFIX_FLIP_STATUS				0x0096
+
+
+
+#define	RWA_VOLTAGE_ALARM					0x0097
+#define	RWA_TEMP_ALARM				    	0x0098
+#define RWA_BOX_OUTLET_TEMP_ALARM			0x0099
+#define	RWA_BOX_48V_TEMP_ALARM				0x009A
+#define	RWA_UPPER_HF_TEMP_ALARM				0x009B
+#define RWA_LOWER_HF_TEMP_ALARM				0x009C
+#define	RWA_48V_SMOKE_ALARM					0x009D
+#define	RWA_BOX_OUTLET_SMOKE_ALARM			0x009E
+#define	RWA_UPPER_HF_SMOKE_ALARM			0x009F
+#define	RWA_LOWER_HF_SMOKE_ALARM			0x00A0
+#define RWA_MF_TOP_OUTLET_TEMP_ALARM		0x00A1
+#define RWA_48V_TEMP_ALARM					0x00A2
+#define	RWA_TOP_OUTLET_SMOKE_ALARM			0x00A3
+//#define RWA_CDU_PUMP_PRESSURE_ALRM		0x00A4
+//TH伺服器告警
+#define RWA_TH_SERVO_ALARM					0x00A4
+#define RWA_CDU_TEMP_ALARM					0x00A5
+#define RWA_CDU_TRAFFIC_ALARM				0x00A6
+#define RWA_48V_VOLTAGE_ALARM				0x00A7
+#define RWA_48V_CURRENT_ALARM				0x00A8
+#define RWA_48V_PS_TEMP_ALARM				0x00A9
+#define RWA_FACTORYWATER_TEMP_ALARM			0x00AA
+#define RWA_FACTORYWATER_TRFFIC_ALARM		0x00AB
+#define	RWA_FACTORYWATER_PRESSURE_ALARM		0x00AC
+
+//TH线缆腔体温度告警阈值设定
+#define RWA_THCABLE_BOX_TEMP_SET			0x00AD
+//HF腔体温度告警阈值设定
+#define RWA_HF_BOX_TEMP_SET					0x00AE
+//TH腔体进风口温度告警阈值设定
+#define RWA_BOX_INLET_TEMP_SET				0x00AF
+//HF腔体烟雾阈值设定
+#define	RWA_HFBOX_SMOKE_SET					0x00B0
+//TH板卡腔体出风口风扇转速
+#define RWA_THBOX_FAN_SET					0x00B1
+//TH线缆腔体出风口风扇转速
+#define RWA_THCABLE_FAN_SET					0x00B2
+//MF顶部出风口风扇转速
+#define RWA_MFTOP_FAN_SET					0x00B3
+//MF CDU合阐线圈开关状态
+#define RWA_MF_CDU_SW						0x00B4
+//MF DC1开关状态
+#define RWA_MF_DC1_SW						0x00B5
+//MF DC2开关状态
+#define RWA_MF_DC2_SW						0x00B6
+//设置电机位置
+#define RWA_MOTOR_POS						0x00B7
+//TH水浸传感器高度1
+#define	RWA_TH_WATERLOGGING1				0x00B8
+//TH水浸传感器高度2
+#define RWA_TH_WATERLOGGING2				0x00B9
+//读取rk3588所有IP
+#define RWA_RK3588_IP						0x00BA
+//写入X86的IP
+#define RWA_X86_IP							0x00BB
+//驱动DRV初始化信号
+#define RWA_DRV_INI_SIGNAL					0x00BC
+
+//工作模式
+#define	RWA_CDU_WORKMODE					0x1001
+//水泵1转速
+#define RWA_CDU_PUMP1_SPEED					0x1002
+//水泵2转速
+#define RWA_CDU_PUMP2_SPEED					0x1003
+//电动阀命令
+#define RWA_CDU_ELEC_VALVE_COMMAND			0x1004
+//电动阀反馈
+#define RWA_CDU_ELEC_VALVE_FEEDBACK			0x1005
+//一次侧供水温度
+#define RWA_CDU_PRIMARY_WATER_TEMP			0x1006
+//二次侧供水温度T2a
+#define	RWA_CDU_SECONDARY_WATER_T2A			0x1007
+//二次侧供水温度T2b
+#define	RWA_CDU_SECONDARY_WATER_T2B			0x1008
+//二次侧供水温度T2c
+#define	RWA_CDU_SECONDARY_WATER_T2C			0x1009
+//二次侧供水温度
+#define	RWA_CDU_SECONDARY_WATER_TEMP		0x100A
+//环境温度
+#define RWA_CDU_ENV_TEMP					0x100B
+//环境相对湿度
+#define RWA_CDU_RELATIVE_HUMIDITY			0x100C
+//环境露点温度
+#define RWA_CDU_ENV_DEWPOINT_TEMP			0x100D
+//二次侧回水温度T4
+#define RWA_CDU_SECONDARY_BACKWATER_T4		0x100E
+//二次侧回水温度T5
+#define RWA_CDU_SECONDARY_BACKWATER_T5		0x100F
+//二次侧回水压力PS1
+#define RWA_CDU_SECONDARY_STRESS_PS1		0x1010
+//二次侧水泵进口压力PS2
+#define RWA_CDU_SECONDARY_STRESS_PS2		0x1011
+//二次侧供水压力PS3
+#define RWA_CDU_SECONDARY_STRESS_PS3		0x1012
+//二次侧供水压差PS3-PS1
+#define RWA_CDU_SECONDARY_PS3_PS1			0x1013
+//二次侧过滤器压差PS1-PS2
+#define RWA_CDU_SECONDARY_PS1_PS2			0x1014
+//一次侧流量
+#define RWA_CDU_PRIMARY_TRAFFIC				0x1015
+//二次侧流量
+#define	RWA_CDU_SECONDARY_TRAFFIC			0x1016
+//二次侧负载
+#define RWA_CDU_SECONDARY_LOAD				0x1017
+//一次侧负载
+#define RWA_CDU_PRIMARY_LOAD				0x1018
+//温度设定值
+#define RWA_CDU_TEMP_SET_VALUE				0x1019
+
+
+
+//一次侧供水温度传感器故障
+#define RWA_PRIM_WATER_TEMPSENSOR_ALARM		0x101A
+//二次侧供水温度传感器A故障
+#define RWA_SECD_WATER_TEMP_A_ALARM			0x101B
+//二次侧供水温度传感器B故障
+#define RWA_SECD_WATER_TEMP_B_ALARM			0x101C
+//二次侧供水温度传感器C故障
+#define RWA_SECD_WATER_TEMP_C_ALARM			0x101D
+//环境温度传感器故障
+#define RWA_ENV_TEMP_SENSOR_ALARM			0x101E
+//二次侧回水温度传感器故障
+#define RWA_SECD_BACKWATER_SENSOR_ALARM		0x101F
+//一次侧回水温度传感器故障
+#define RWA_PRIM_BACKWATER_SENSOR_ALARM		0x1020
+//机房相对湿度传感故障
+#define RWA_HUMIDITY_SENSOR_ALARM			0x1021
+//二次侧回水压力传感器故障
+#define RWA_SECD_PS1_SENSOR_ALARM			0x1022
+//二次侧水泵压力传感器故障
+#define RWA_SECD_PS2_SENSOR_ALARM			0x1023
+//二次侧供水压力传感器故障
+#define RWA_SECD_PS3_SENSOR_ALARM			0x1024
+//二次侧流量计故障
+#define RWA_SECD_TRAFFIC_SENSOR_ALARM		0x1025
+//一次侧流量计故障
+#define RWA_PRIM_TRAFFIC_SENSOR_ALARM		0x1026
+//存储卡故障
+#define RWA_MEMORYCARD_ALARM				0x1027
+//补水袋已空
+#define RWA_WATERBAG_EMPTY_ALARM			0x1028
+//系统缺水
+#define RWA_SYSTEM_LACKWATER_ALARM			0x1029
+//水泵1故障
+#define RWA_PUMP1_ALARM						0x102A
+//水泵2故障
+#define RWA_PUMP2_ALARM						0x102B
+//泵故障停机
+#define RWA_PUMP_STOP_ALARM					0x102C
+//电动阈故障
+#define RWA_ELEC_VALVE_ALARM				0x102D
+//一次侧低流量告警
+#define RWA_PRIM_TRAFFIC_LOW_ALARM			0x102E
+//一次侧水温过低告警
+#define RWA_PRIM_WATERTEMP_LOW_ALARM		0x102F
+//一次侧水温过高告警
+#define RWA_PRIM_WATERTEMP_HIGH_ALARM		0x1030
+//二次侧水温过低告警
+#define RWA_SECD_WATERTEMP_LOW_ALARM		0x1031
+//二次侧水温过高告警
+#define RWA_SECD_WATERTEMP_HIGH_ALARM		0x1032
+//机箱内监测到液体
+#define RWA_BOX_MONITORED_LIQUID_ALARM		0x1033
+//二次侧压力过高
+#define RWA_PRIM_STRESS_HIGH_ALARM			0x1034
+//外部漏水(一次侧)
+#define RWA_PRIM_WATERLEAK_ALARM			0x1035
+//外部漏水(二次侧)
+#define RWA_SECD_WATERLEAK_ALARM			0x1036
+//检查补水袋水位
+#define	RWA_WATERBAG_LINE_ALARM				0x1037
+//系统压力过低告警
+#define RWA_SYS_STRESS_LOW_ALARM			0x1038
+//系统压力过高告警
+#define RWA_SYS_STRESS_HIGH_ALARM			0x1039
+//一次侧无流告警
+#define RWA_PRIM_NO_TRAFFIC_ALARM			0x103A
+//液位传感器未检测到水
+#define RWA_LIQUIDLEVEL_NOWATER_ALARM		0x103B
+//液位传感器失效
+#define RWA_LIQUIDLEVEL_INVALID_ALARM		0x103C
+//群控网络故障
+#define RWA_GROUP_CONTROL_NET_ALARM			0x103D
+//群控数量不足
+#define RWA_GCN_INSUFFICIENT_ALARM			0x103E
+//二次侧过滤器堵
+#define RWA_FILTER_PLUGGING_ALARM			0x103F
+//电量表故障
+#define	RWA_COULOMBMETER_ALARM				0x1040
+//二次侧供水温度传感器A差异
+#define RWA_SECD_WATERTEMP_ADIFF_ALARM		0x1041
+//二次侧供水温度传感器B差异
+#define RWA_SECD_WATERTEMP_BDIFF_ALARM		0x1042
+//二次侧供水温度传感器C差异
+#define RWA_SECD_WATERTEMP_CDIFF_ALARM		0x1043
+//水泵1通信故障
+#define RWA_PUMP1_COMM_ALARM				0x1044
+//水泵2通信故障
+#define RWA_PUMP2_COMM_ALARM				0x1045
+//水泵1流量过低
+#define RWA_PUMP1_TRAFFIC_LOW_ALARM			0x1046
+//补水请求告警
+#define	RWA_SUPPLY_WATER_ALARM				0x1047
+//存储卡满告警
+#define RWA_MEMORYCARD_FULL_ALARM			0x1048
+//水泵2流量告警
+#define RWA_PUMP2_TRAFFIC_LOW_ALARM			0x1049
+
+
+
+//command报文命令字的tlv的type值
+#define CMD_48V_OUTPUT_SWITCH				0x0001
+#define CMD_QF1_OUTPUT_SWITCH				0x0002
+#define CMD_QF2_OUTPUT_SWITCH				0x0003
+#define CMD_POWERSOURCE_INPUT_SWITCH		0x0004
+#define CMD_BOX_INLET_FAN_SPEED				0x0005
+#define	CMD_BOX_OUTLET_FAN_SPEED			0x0006
+#define	CMD_48V_BOX_OUTLET_FAN_SPEED		0x0007
+
+//电源控制开关
+#define CMD_BOARD_POWER_SWITCH				0x0008
+#define CMD_FPGA_POWER_SWITCH				0x0009
+#define CMD_UTP40_POWER_SWITCH				0x000A
+#define CMD_ASIC_POWER_SWITCH				0x000B
+#define CMD_PPS_ASIC_POWER_SWITCH			0x0012
+#define CMD_FPGA200T_POWER_SWITCH			0x0013
+#define CMD_UTP40_POWER_MASTERSWITCH		0x0014
+#define CMD_KU060_FPGA_POWER_SWITCH			0x0016
+
+//电机原点回归
+#define	CMD_MOTOR_POSITION_BACK				0x0015
+
+//MF风扇转速档位调整
+#define CMD_MF_FAN_SPEED					0x000C
+//DC1远程合闸/分闸
+#define CMD_DC1_REMOTE_SWITCH				0x000D
+//DC2远程合闸/分闸
+#define CMD_DC2_REMOTE_SWITCH				0x000E
+//CDU液冷自动工作开关
+#define CMD_CDU_AUTO_SWITCH					0x000F
+//AC远程合闸/分闸
+#define CMD_AC_REMOTE_SWITCH				0x0010
+//CDU合闸线圈
+#define CMD_CDU_COIL_SWITCH					0x0011
+
+//时钟频率控制
+#define CMD_4356_FREQUENCY_SET         		0x0020
+
+
+#define	MSG_CMD_MASK						0x0F
+#define MSG_MASK							0x80
+#define MSG_REQUEST							0x00
+#define MSG_RESPONE							0x80
+#define MSG_NOTIFY							0x90
+#define BOARDTYPE_MASK						0x00FF
+#define SLOT_MASK							0xFF00
+
+
+enum board_type			/*板卡类型*/
+{
+	BOARDTYPE_CP_SYNC   	= 0x11,
+	BOARDTYPE_CP_PGB    	= 0x12,
+	BOARDTYPE_CP_DPS    	= 0x13,
+	BOARDTYPE_CP_PEM    	= 0x14,
+	BOARDTYPE_CP_RCA    	= 0x15,
+	BOARDTYPE_CP_DIG		= 0x1B,
+
+	BOARDTYPE_ASIC 			= 0x20,
+	BOARDTYPE_FT_SYNC 		= 0x21,
+	BOARDTYPE_FT_PGB 		= 0x22,
+	BOARDTYPE_FT_PPS 		= 0x23,
+	BOARDTYPE_FT_DIG 		= 0x2B,
+	
+
+	BOARDTYPE_TH_MONITOR 	= 0x40,
+	BOARDTYPE_MF_MONITOR 	= 0x4F,
+
+	BOARDTYPE_MAX
+};
+
+
+
+enum heartbeat_status 
+{
+	HEARTBEAT_NOT_ALIVED,
+	HEARTBEAT_ALIVED,	
+};
+
+
+enum power_switch
+{
+	POWER_SWITCH_NONE,
+	//上电/主从逻辑同上电
+	POWER_SWITCH_ON,
+	//断电/主从逻辑同断电
+	POWER_SWITCH_OFF,
+	//主逻辑同上电
+	POWER_MASTER_SWITCH_ON,
+	//主逻辑同断电
+	POWER_MASTER_SWITCH_OFF,
+	//从逻辑同上电
+	POWER_SLAVER_SWITCH_ON,
+	//从逻辑同断电
+	POWER_SLAVER_SWITCH_OFF,
+	
+	POWER_SWITCH_MAX
+};
+
+enum mcufpga_vertype
+{
+	MCUFPGA_VER_NONE = 0,
+		
+	//CP
+	MCUFPGA_VER_CPSYNC_KU060 = 1,
+	MCUFPGA_VER_CPPEM_AGFB008_019 = 2,
+	MCUFPGA_VER_CPPEM_1st250_165 = 3,
+	MCUFPGA_VER_CPPEM_7A200T_1 = 4,
+	MCUFPGA_VER_CPPEM_7A200T_2 = 5,
+	MCUFPGA_VER_CPPEM_7A200T_3 = 6,
+	MCUFPGA_VER_CPDPS_7A200T_M = 7,
+	MCUFPGA_VER_CPDPS_7A200T_S1 = 8,
+	MCUFPGA_VER_CPDPS_7A200T_S2 = 9,
+	MCUFPGA_VER_CPDPS_7A200T_S3 = 10,
+	MCUFPGA_VER_CPDPS_7A200T_S4 = 11,
+	
+	//FT
+	MCUFPGA_VER_FTSYNC_KU060 = 81,
+	MCUFPGA_VER_FTPPS_7A200T_M = 82,
+	MCUFPGA_VER_FTPPS_7A200T_S1 = 83,
+	MCUFPGA_VER_FTPPS_7A200T_S2 = 84,
+	MCUFPGA_VER_FTPGB_KU060 = 85,
+	MCUFPGA_VER_FTPGB_7A200T = 86,
+	MCUFPGA_VER_FTASIC_AGFB008 = 87,
+	MCUFPGA_VER_FTASIC_1ST250 = 88,
+	
+	MCUFPGA_VER_MAX
+};
+
+enum mucfgpa_serdestype
+{
+	MCUFPGA_SERDES_NONE = 0,
+
+	//CP
+	MCUFPGA_SERDES_CPSYNC_KU060 = 1,
+	MCUFPGA_SERDES_SYNCPEM_1st250 = 2,
+	MCUFPGA_SERDES_SYNCPEM_AGFB008_019 = 3,
+	MCUFPGA_SERDES_SYNCDPS_7A200T = 4 ,
+	MCUFPGA_SERDES_CPPEM_AGFB008 = 5,
+	MCUFPGA_SERDES_CPPEM_1ST165 = 6,
+	MCUFPGA_SERDES_CPPEM_7A200T_1 = 7,
+	MCUFPGA_SERDES_CPPEM_7A200T_2 = 8,
+	MCUFPGA_SERDES_CPPEM_7A200T_3 = 9,
+	MCUFPGA_SERDES_CPDPS_7A200T_M = 10,
+	
+	//FT
+	MCUFPGA_SERDES_FTSYNC_PCIE = 81,
+	MCUFPGA_SERDES_FTSYNC_PGBKU060 = 82,
+	MCUFPGA_SERDES_FTSYNC_PPS7A200T = 83,
+	MCUFPGA_SERDES_FTPPS_SYNCKU060 = 84,
+	MCUFPGA_SERDES_FTPPS_7A200T_S1 = 85,
+	MCUFPGA_SERDES_FTPPS_7A200T_S2 = 86,
+	MCUFPGA_SERDES_FTPGB_SYNCKU060 = 87,
+	MCUFPGA_SERDES_FTPGB_PCIE = 88,
+	MCUFPGA_SERDES_FTPGB_MASTER_SLAVE = 89,
+	MCUFPGA_SERDES_FTPGB_ASIC_AGFB008 = 90,
+	MCUFPGA_SERDES_FTPGB_ASIC_PDS_1 = 91,
+	MCUFPGA_SERDES_FTPGB_ASIC_PDS_2 = 92,
+	MCUFPGA_SERDES_FTPGB_ASIC_PDS_3 = 93,
+	MCUFPGA_SERDES_FTASIC_PGM_PGB = 94,
+	MCUFPGA_SERDES_FTASIC_PGM_PDS = 95,
+	MCUFPGA_SERDES_FTASIC_PDS_PGB = 96,
+	
+	MCUFPGA_SERDES_MAX
+};
+
+
+#endif
